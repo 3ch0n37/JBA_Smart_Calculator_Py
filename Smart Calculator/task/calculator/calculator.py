@@ -6,33 +6,50 @@ def is_number(x):
         return False
     return True
 
+def menu(command):
+    if command == '/exit':
+        return False
+    elif command == '/help':
+        return 'The program is a simple calculator, terms and operations are separated by spaces.'
+    else:
+        return 'Unknown command'
+
 
 def main():
-    terms = None
+    expression = None
 
-    while terms != '/exit':
-        terms = input()
-        if terms == '/exit':
+    while expression != '/exit':
+        expression = input()
+        if expression == '':
             continue
-        elif terms == '/help':
-            print('The program is a simple calculator, terms and operations are separated by spaces.')
-            continue
-        elif terms == '':
+        if expression[0] == '/':
+            message = menu(expression)
+            if message:
+                print(message)
             continue
         factor = 1
         result = 0
-        terms = terms.split()
-        for term in terms:
-            if '-' in term and not is_number(term):
-                if len(term) % 2 == 0 and '+' not in term:
-                    factor = 1
+        expression = expression.split()
+        if len(expression) % 2 == 0:
+            print('Invalid exception')
+            continue
+        for index, term in enumerate(expression):
+            if index % 2 == 0:
+                if not is_number(term):
+                    print('Invalid expression')
+                    result = False
                 else:
-                    factor = -1
-            elif '+' in term:
-                factor = 1
+                    result += factor * int(term)
             else:
-                result += factor * int(term)
-        print(result)
+                if '-' in term and not is_number(term):
+                    if len(term) % 2 == 0 and '+' not in term:
+                        factor = 1
+                    else:
+                        factor = -1
+                elif '+' in term:
+                    factor = 1
+        if result is not False:
+            print(result)
 
     print('Bye!')
 
