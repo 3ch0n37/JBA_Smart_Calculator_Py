@@ -1,10 +1,14 @@
 # write your code here
+from calc import Calc
+
+
 def is_number(x):
     try:
         int(x)
     except ValueError:
         return False
     return True
+
 
 def menu(command):
     if command == '/exit':
@@ -17,6 +21,7 @@ def menu(command):
 
 def main():
     expression = None
+    calculator = Calc()
 
     while expression != '/exit':
         expression = input()
@@ -27,29 +32,46 @@ def main():
             if message:
                 print(message)
             continue
-        factor = 1
-        result = 0
-        expression = expression.split()
-        if len(expression) % 2 == 0:
-            print('Invalid exception')
-            continue
-        for index, term in enumerate(expression):
-            if index % 2 == 0:
-                if not is_number(term):
-                    print('Invalid expression')
-                    result = False
-                else:
-                    result += factor * int(term)
+        if '=' in expression:
+            r = calculator.assignment(expression)
+            if r is not True:
+                print(r)
+        else:
+            factor = 1
+            result = 0
+            expression = expression.split()
+            if len(expression) == 1 and not is_number(expression[0]):
+                print(calculator.get_value(expression[0]))
+            elif len(expression) % 2 == 0:
+                print('Invalid expression')
+                continue
             else:
-                if '-' in term and not is_number(term):
-                    if len(term) % 2 == 0 and '+' not in term:
-                        factor = 1
+                for index, term in enumerate(expression):
+                    if index % 2 == 0:
+                        if is_number(term):
+                            result += factor * int(term)
+                        elif term.isalnum():
+                            n = calculator.get_value(term)
+                            if not is_number(n):
+                                print(n)
+                                result = False
+                                break
+                            else:
+                                result += factor * int(n)
+                        else:
+                            print('Invalid expression')
+                            result = False
+                            break
                     else:
-                        factor = -1
-                elif '+' in term:
-                    factor = 1
-        if result is not False:
-            print(result)
+                        if '-' in term and not is_number(term):
+                            if len(term) % 2 == 0 and '+' not in term:
+                                factor = 1
+                            else:
+                                factor = -1
+                        elif '+' in term:
+                            factor = 1
+                if result is not False:
+                    print(result)
 
     print('Bye!')
 
