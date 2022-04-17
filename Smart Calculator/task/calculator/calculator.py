@@ -1,26 +1,21 @@
-# write your code here
-from calc import Calc
-
-
-def is_number(x):
-    try:
-        int(x)
-    except ValueError:
-        return False
-    return True
+from calc import Calc, is_number
+from collections import deque
+import re
 
 
 def menu(command):
     if command == '/exit':
         return False
     elif command == '/help':
-        return 'The program is a simple calculator, terms and operations are separated by spaces.'
+        return 'The program is a simple calculator, terms and operations are separated by spaces.\n' \
+               'Supported operations: adding, subtracting, multiplication and division.\n' \
+               'Grouping using brackets is also supported.\n'
     else:
         return 'Unknown command'
 
 
 def main():
-    expression = None
+    expression = ''
     calculator = Calc()
 
     while expression != '/exit':
@@ -39,13 +34,19 @@ def main():
         else:
             factor = 1
             result = 0
-            expression = expression.split()
-            if len(expression) == 1 and not is_number(expression[0]):
-                print(calculator.get_value(expression[0]))
-            elif len(expression) % 2 == 0:
+            expression = calculator.infix_to_postfix(expression)
+            if not expression:
                 print('Invalid expression')
                 continue
+            if len(expression) == 1 and not is_number(expression[0]):
+                print(calculator.get_value(expression[0]))
             else:
+                result = calculator.evaluate()
+                if result is False:
+                    print('Invalid expression')
+                else:
+                    print(result)
+                """
                 for index, term in enumerate(expression):
                     if index % 2 == 0:
                         if is_number(term):
@@ -72,6 +73,7 @@ def main():
                             factor = 1
                 if result is not False:
                     print(result)
+                """
 
     print('Bye!')
 
